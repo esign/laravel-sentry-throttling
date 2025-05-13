@@ -3,9 +3,9 @@
 
 use PHPUnit\Framework\Attributes\Test;
 
-namespace :vendor_namespace\Tests;
+namespace Esign\SentryThrottling\Tests;
 
-final class :studly_package_nameTest extends TestCase
+final class SentryThrottlingTest extends TestCase
 {
     #[Test]
     public function test(): void
