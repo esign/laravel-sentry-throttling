@@ -26,7 +26,7 @@ final class SentryThrottlingTest extends TestCase
     protected function defineEnvironment($app): void
     {
         $app['config']->set('sentry.dsn', 'https://publickey@sentry.dev/123');
-        $app['config']->set('sentry.before_send', fn ($event, $hint) => (new SentryThrottling())->beforeSend($event, $hint));
+        $app['config']->set('sentry.before_send', [SentryThrottling::class, 'beforeSend']);
         $app->bind(ExceptionHandler::class, BaseExceptionHandler::class);
     }
 

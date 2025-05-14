@@ -17,11 +17,15 @@ You can install the package via composer:
 composer require esign/laravel-sentry-throttling
 ```
 
-The package will automatically register a service provider.
+You must configure the `before_send` option in your `config/sentry.php` file so that Sentry uses the throttling logic.
+Add the following to your Sentry config:
 
-Next up, you can publish the configuration file:
-```bash
-php artisan vendor:publish --provider="Esign\SentryThrottling\SentryThrottlingServiceProvider" --tag="config"
+```php
+// config/sentry.php
+return [
+    // ...existing config...
+    'before_send' => [\Esign\SentryThrottling\SentryThrottling::class, 'beforeSend'],
+];
 ```
 
 ## Usage

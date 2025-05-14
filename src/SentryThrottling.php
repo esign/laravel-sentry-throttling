@@ -12,7 +12,7 @@ use Throwable;
 
 class SentryThrottling
 {
-    public function beforeSend(Event $event, ?EventHint $hint): ?Event
+    public static function beforeSend(Event $event, ?EventHint $hint): ?Event
     {
         if (! $hint?->exception instanceof Throwable) {
             return $event;
