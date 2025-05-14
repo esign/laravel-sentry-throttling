@@ -12,4 +12,4 @@ abstract class TestCase extends BaseTestCase
     {
         return [ServiceProvider::class, SentryThrottlingServiceProvider::class];
     }
-} 
+}

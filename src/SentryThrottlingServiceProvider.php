@@ -8,6 +8,6 @@ class SentryThrottlingServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        // 
+        //
     }
 }
