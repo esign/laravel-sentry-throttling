@@ -47,10 +47,7 @@
         "laravel": {
             "providers": [
                 "Esign\\SentryThrottling\\SentryThrottlingServiceProvider"
-            ],
-            "aliases": {
-                "SentryThrottling": "Esign\\SentryThrottling\\Facades\\SentryThrottlingFacade"
-            }
+            ]
         }
     },
     "minimum-stability": "dev",
