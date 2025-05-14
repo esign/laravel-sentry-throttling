@@ -18,15 +18,16 @@ final class SentryThrottlingTest extends TestCase
 {
     use MocksSentryRequests;
 
-    protected function useExceptionHandler(ExceptionHandler $handler): void
+    protected function registerThrottlesSentryReports(ThrottlesSentryReports $instance): void
     {
-        $this->app->instance(ExceptionHandler::class, $handler);
+        $this->app->instance(ThrottlesSentryReports::class, $instance);
     }
 
     protected function defineEnvironment($app): void
     {
         $app['config']->set('sentry.dsn', 'https://publickey@sentry.dev/123');
-        $app['config']->set('sentry.before_send', fn ($event, $hint) => app(SentryThrottling::class)->beforeSend($event, $hint));
+        $app['config']->set('sentry.before_send', fn ($event, $hint) => (new SentryThrottling())->beforeSend($event, $hint));
+        $app->bind(ExceptionHandler::class, BaseExceptionHandler::class);
     }
 
     #[Test]
@@ -34,7 +35,7 @@ final class SentryThrottlingTest extends TestCase
     public function it_can_throttle_exceptions_using_a_limit(): void
     {
         // Arrange
-        $this->useExceptionHandler(new class($this->app) extends BaseExceptionHandler implements ThrottlesSentryReports {
+        $this->registerThrottlesSentryReports(new class implements ThrottlesSentryReports {
             public function throttleSentry(Throwable $exception): Limit | Lottery | null
             {
                 return Limit::perMinute(1);
@@ -54,7 +55,7 @@ final class SentryThrottlingTest extends TestCase
     public function it_can_throttle_exceptions_using_a_limit_using_a_key(): void
     {
         // Arrange
-        $this->useExceptionHandler(new class($this->app) extends BaseExceptionHandler implements ThrottlesSentryReports {
+        $this->registerThrottlesSentryReports(new class implements ThrottlesSentryReports {
             public function throttleSentry(Throwable $exception): Limit | Lottery | null
             {
                 return Limit::perMinute(1)->by($exception->getMessage());
@@ -76,7 +77,7 @@ final class SentryThrottlingTest extends TestCase
     {
         // Arrange
         Lottery::fix([true, false]);
-        $this->useExceptionHandler(new class($this->app) extends BaseExceptionHandler implements ThrottlesSentryReports {
+        $this->registerThrottlesSentryReports(new class implements ThrottlesSentryReports {
             public function throttleSentry(Throwable $exception): Limit | Lottery | null
             {
                 return Lottery::odds(1, 2);
@@ -96,7 +97,7 @@ final class SentryThrottlingTest extends TestCase
     public function it_wont_throttle_exceptions_using_unlimited(): void
     {
         // Arrange
-        $this->useExceptionHandler(new class($this->app) extends BaseExceptionHandler implements ThrottlesSentryReports {
+        $this->registerThrottlesSentryReports(new class implements ThrottlesSentryReports {
             public function throttleSentry(Throwable $exception): Limit | Lottery | null
             {
                 return Limit::none();
@@ -116,7 +117,7 @@ final class SentryThrottlingTest extends TestCase
     public function it_wont_throttle_exceptions_using_null(): void
     {
         // Arrange
-        $this->useExceptionHandler(new class($this->app) extends BaseExceptionHandler implements ThrottlesSentryReports {
+        $this->registerThrottlesSentryReports(new class implements ThrottlesSentryReports {
             public function throttleSentry(Throwable $exception): Limit | Lottery | null
             {
                 return null;
@@ -133,10 +134,10 @@ final class SentryThrottlingTest extends TestCase
 
     #[Test]
     #[DefineEnvironment('withSentryTransportMocking')]
-    public function it_wont_throttle_exceptions_when_the_exception_handler_does_not_implement_throttles_sentry_reports(): void
+    public function it_wont_throttle_exceptions_when_interface_was_not_bound_in_the_container(): void
     {
         // Arrange
-        $this->useExceptionHandler(new BaseExceptionHandler($this->app));
+        $this->app->instance(ThrottlesSentryReports::class, null);
 
         // Act
         report(new Exception());
