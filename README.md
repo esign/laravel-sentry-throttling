@@ -65,9 +65,12 @@ You must bind your implementation of `ThrottlesSentryReports` in the Laravel con
 use Esign\SentryThrottling\Contracts\ThrottlesSentryReports;
 use App\Exceptions\Handler;
 
-public function register()
+class AppServiceProvider extends ServiceProvider
 {
-    $this->app->bind(ThrottlesSentryReports::class, Handler::class);
+    public function register(): void
+    {
+        $this->app->bind(ThrottlesSentryReports::class, Handler::class);
+    }
 }
 ```
 
