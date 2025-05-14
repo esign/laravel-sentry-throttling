@@ -1,6 +1,6 @@
 {
     "name": "esign/laravel-sentry-throttling",
-    "description": "Throttle exceptions being sent to Sentry.",
+    "description": "Throttle exceptions being sent to Sentry",
     "keywords": [
         "esign",
         "sentry-throttling"

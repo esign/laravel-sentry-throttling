@@ -1,8 +1,13 @@
-# Throttle exceptions being sent to Sentry.
+# Throttle exceptions being sent to Sentry
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/esign/laravel-sentry-throttling.svg?style=flat-square)](https://packagist.org/packages/esign/laravel-sentry-throttling)
 [![Total Downloads](https://img.shields.io/packagist/dt/esign/laravel-sentry-throttling.svg?style=flat-square)](https://packagist.org/packages/esign/laravel-sentry-throttling)
 ![GitHub Actions](https://github.com/esign/laravel-sentry-throttling/actions/workflows/main.yml/badge.svg)
+
+Laravel includes a built-in mechanism for throttling exceptions, but it doesn’t support defining throttling rules for individual reportables.
+This package adds the ability to throttle exceptions specifically before they are sent to Sentry.
+It's especially useful if you want to continue logging all exceptions locally while avoiding repeated reports of the same exception being sent to Sentry.
+While Sentry does offer its own sampling via the sample_rate setting, that approach is percentage-based and less granular than exception-specific throttling.
 
 ## Installation
 
