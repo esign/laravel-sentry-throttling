@@ -146,4 +146,24 @@ final class SentryThrottlingTest extends TestCase
         // Assert
         $this->assertSentryRequestCount(2);
     }
+
+    #[Test]
+    #[DefineEnvironment('withSentryTransportMocking')]
+    public function it_wont_throttle_exceptions_when_something_fails_during_the_rate_limiting_determination(): void
+    {
+        // Arrange
+        $this->registerThrottlesSentryReports(new class implements ThrottlesSentryReports {
+            public function throttleSentry(Throwable $exception): Limit | Lottery | null
+            {
+                throw new Exception("Something went wrong");
+            }
+        });
+
+        // Act
+        report(new Exception());
+        report(new Exception());
+
+        // Assert
+        $this->assertSentryRequestCount(2);
+    }
 }

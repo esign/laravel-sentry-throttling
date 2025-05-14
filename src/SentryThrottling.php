@@ -44,6 +44,6 @@ class SentryThrottling
                 fn () => true,
                 $throttle->decaySeconds
             ) ? $event : null;
-        }), rescue: false, report: false);
+        }), rescue: $event, report: false);
     }
 }
