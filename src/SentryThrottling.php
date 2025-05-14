@@ -5,7 +5,6 @@ namespace Esign\SentryThrottling;
 use Esign\SentryThrottling\Contracts\ThrottlesSentryReports;
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Cache\RateLimiting\Unlimited;
-use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Lottery;
 use Sentry\Event;
 use Sentry\EventHint;
@@ -19,13 +18,16 @@ class SentryThrottling
             return $event;
         }
 
-        $exceptionHandler = app(ExceptionHandler::class);
+        $throttler = null;
+        if (app()->bound(ThrottlesSentryReports::class)) {
+            $throttler = app(ThrottlesSentryReports::class);
+        }
 
-        if (! $exceptionHandler instanceof ThrottlesSentryReports) {
+        if (! $throttler) {
             return $event;
         }
 
-        return rescue(fn () => with($exceptionHandler->throttleSentry($hint->exception), function ($throttle) use ($hint, $event) {
+        return rescue(fn () => with($throttler->throttleSentry($hint->exception), function ($throttle) use ($hint, $event) {
             if ($throttle instanceof Unlimited || $throttle === null) {
                 return $event;
             }
