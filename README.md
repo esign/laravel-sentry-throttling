@@ -46,6 +46,8 @@ class Handler extends ExceptionHandler implements ThrottlesSentryReports
 }
 ```
 
+Whilst we recommend implementing the `ThrottlesSentryReports` interface on your exception handler, you can implement it on any class you like.
+
 ### Binding the interface
 
 You must bind your implementation of `ThrottlesSentryReports` in the Laravel container so the package can resolve it. This is typically done in a service provider, such as `App\Providers\AppServiceProvider`:
@@ -57,18 +59,6 @@ use App\Exceptions\Handler;
 public function register()
 {
     $this->app->bind(ThrottlesSentryReports::class, Handler::class);
-}
-```
-
-If you prefer, you may also bind any other class implementing `ThrottlesSentryReports`:
-
-```php
-use Esign\SentryThrottling\Contracts\ThrottlesSentryReports;
-use App\Services\CustomSentryThrottler;
-
-public function register()
-{
-    $this->app->bind(ThrottlesSentryReports::class, CustomSentryThrottler::class);
 }
 ```
 
